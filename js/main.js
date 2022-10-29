@@ -60,6 +60,8 @@ function checkElemVisible(target) {
         summarySection.addClass('fixed');
         summarySection.removeClass('toggled');
         $('.purchase').removeClass('purchase--no-fixed');
+        contactSection.removeClass('sticky');
+        body.removeClass('sticky');
         $(window).on('scroll', scrolledSummary);
     }
 }
@@ -69,12 +71,13 @@ function unScrolledSummary() {
 }
 
 function scrolledSummary() {
-    const iPhoneFixOffset = 116;
-
-    if($(window).scrollTop() + $(window).height() + iPhoneFixOffset >= $(document).height()) {
+    if($(window).scrollTop() + $(window).height() >= $(document).height()) {
         $(window).off('scroll', scrolledSummary);
         summarySection.removeClass('fixed');
         summarySection.addClass('toggled');
+        contactSection.addClass('sticky');
+        body.addClass('sticky');
+
         $('.purchase').addClass('purchase--no-fixed');
         $(window).on('scroll', unScrolledSummary);
     }
@@ -203,12 +206,20 @@ function isMobile() {
 }
 
 function onCheckoutClick() {
-    toggleContent(checkoutSection, 500, 500);
+    toggleContent(checkoutSection, 300, 300);
 }
 
 function onSummaryClick() {
     hideContent(notice, 500);
-    toggleContent(summarySection, 1000, 500) ? showContent(body) : hideContent(body);
+    contactSection.removeClass('sticky');
+    body.removeClass('sticky');
+    summarySection.addClass('fixed');
+    if (toggleContent(summarySection, 1000, 500)) {
+        showContent(body);
+    } else {
+        hideContent(body);
+        setTimeout(() => {$(window).on('scroll', scrolledSummary)}, 1000)
+    }
 }
 
 function onResize() {
@@ -261,6 +272,7 @@ const checkoutSection = $('.checkout');
 const summaryHeader = $('.summary__title');
 const summarySection = $('.summary');
 const summaryBtn = $('.summary__apply');
+const contactSection = $('.contacts');
 const body = $(document.body);
 const notice = $('.notice');
 const noticeBtn = $('.notice__close');
